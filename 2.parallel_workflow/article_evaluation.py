@@ -71,6 +71,7 @@ graph.add_edge("get_final_score", END)
 
 # compile graph
 workflow = graph.compile()
+print(workflow.get_graph().print_ascii()) # to see graph visually
 
 # execute graph
 result = workflow.invoke({"article": article})
