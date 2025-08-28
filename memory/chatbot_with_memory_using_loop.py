@@ -1,11 +1,12 @@
+import uuid
 from dotenv import load_dotenv
 from typing import Annotated, TypedDict
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
-
+from langgraph.checkpoint.memory import MemorySaver
 load_dotenv()
 
 llm = ChatGoogleGenerativeAI(
@@ -21,38 +22,33 @@ class ChatState(TypedDict):
     messages: Annotated[list[str], add_messages]
 
 # define methods
-def ask_question(state: ChatState):
-    query = input("You: ")
-    return {"messages": [HumanMessage(query)]}
-
-def generate_answer(state: ChatState):
+def chat(state: ChatState):
+    message = state["messages"]
     chain = llm | parser
-    result = chain.invoke(state["messages"])
-    print("AI: ", result)
-    return {"messages": [AIMessage(result)]}
+    result = chain.invoke(message)
+    return {"messages": [AIMessage(content=result)]}
 
-def check_user_input(state: ChatState):
-    if state["messages"] and state["messages"][-1].content.lower() in ["exit", "quit", "bye"]:
-        print(f"*******All messages********\n{state['messages']}")
-        return "stop"
-    else:
-        return "continue"
+# define memory
+memory = MemorySaver()
 
 # define graph
 graph = StateGraph(ChatState)
 
 # define nodes
-graph.add_node("ask_question", ask_question)
-graph.add_node("generate_answer", generate_answer)
+graph.add_node("chat", chat)
 
 # define edges
-graph.add_edge(START, "ask_question")
-graph.add_conditional_edges("ask_question", check_user_input, {
-    "stop": END,
-    "continue": "generate_answer"
-})
-graph.add_edge("generate_answer", "ask_question")
+graph.add_edge(START, "chat")
+graph.add_edge("chat", END)
 
-workflow = graph.compile()
+chatbot = graph.compile(checkpointer=memory)
 
-result = workflow.invoke({"messages": []})
+session_id = str(uuid.uuid4())
+chatbot_config = {"configurable": {"thread_id": session_id}}
+
+while True:
+    user_input = input("You: ")
+    if user_input.lower() in ["exit", "quit", "bbye"]:
+        break
+    result = chatbot.invoke({"messages": [HumanMessage(content=user_input)]}, config=chatbot_config)
+    print(f"AI: {result['messages'][-1].content}")
