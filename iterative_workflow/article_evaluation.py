@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from typing import TypedDict
+from pydantic import BaseModel, Field
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langgraph.graph import StateGraph, START, END
@@ -26,10 +27,6 @@ prompt = PromptTemplate(
     )
 
 parser = StrOutputParser()
-
-
-# define state
-from pydantic import BaseModel, Field
 
 class ArticleEvalState(BaseModel):
     article: str
