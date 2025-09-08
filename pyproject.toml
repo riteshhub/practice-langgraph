@@ -9,5 +9,7 @@ dependencies = [
     "grandalf>=0.8",
     "langchain[google-genai]>=0.3.27",
     "langgraph>=0.6.3",
+    "langgraph-checkpoint-sqlite>=2.0.11",
     "python-dotenv>=1.1.1",
+    "streamlit>=1.49.1",
 ]

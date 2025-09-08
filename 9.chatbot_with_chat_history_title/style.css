@@ -1,0 +1,18 @@
+div.stButton > button:first-child {
+        background-color: #007bff; /* Default background color */
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+    }
+
+div.stButton > button:first-child:focus:not(:active) {
+    background-color: #0056b3; /* Color when focused but not active */
+    border-color: #0056b3;
+}
+
+div.stButton > button:first-child:focus:active {
+    background-color: #004085; /* Color when focused and active (after click) */
+    border-color: #004085;
+}
