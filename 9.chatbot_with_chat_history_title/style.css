@@ -1,18 +1,44 @@
-div.stButton > button:first-child {
-        background-color: #007bff; /* Default background color */
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        border: none;
-        cursor: pointer;
-    }
-
-div.stButton > button:first-child:focus:not(:active) {
-    background-color: #0056b3; /* Color when focused but not active */
-    border-color: #0056b3;
+div.stButton > button:not(.st-key-new_chat_btn button) {
+    display: flex !important;
+    justify-content: flex-start !important; 
+    align-items: center !important;
+    padding-left: 12px !important;
 }
 
-div.stButton > button:first-child:focus:active {
-    background-color: #004085; /* Color when focused and active (after click) */
-    border-color: #004085;
+div.stButton > button:not(.st-key-new_chat_btn button):hover {
+    background-color: #e6f0ff !important;
+    color: #196ce8 !important;
+}
+div.stButton > button:not(.st-key-new_chat_btn button) svg {
+    margin-right: 8px !important;
+}
+
+.st-key-new_chat_btn button {
+    background-color: #4d82d0;
+    color: #ffffff;
+    font-weight: bold;  
+}
+.st-key-new_chat_btn:hover button {
+    background-color: #196ce8;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.my-sidebar-title {
+    display: flex !important;
+    justify-content: flex-start !important; 
+    align-items: center !important;
+    padding-left: 5px !important;
+    color: #0c55ad !important;
+    font-size: 2rem !important;
+    margin-top: -45px !important;
+    padding-bottom: 30px !important;
+    gap: 6px;
+}
+.material-symbols-outlined {
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 700,
+    'GRAD' 0,
+    'opsz' 48;
 }
