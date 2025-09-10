@@ -6,7 +6,7 @@ from backend_langgraph import chatbot, get_all_thread_ids
 user_avatar = "https://img.icons8.com/ios-filled/50/12B886/user.png"
 bot_avatar = "https://img.icons8.com/ios-filled/50/228BE6/sparkling--v1.png"
 
-with open("11.chatbot_with_dummy_tools_n_ui/style.css") as f:
+with open("12.chatbot_with_dummy_tools_n_ui/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 #*******************************UTILITIES********************************#
@@ -78,7 +78,7 @@ with st.sidebar:
         if st.button(button_label, width="stretch", type=button_type, icon=button_icon):
             st.session_state.thread_id = thread_id
             messages = load_conversation(thread_id)
-            st.session_state.message_history = [{"role": msg.type, "content": msg.content} for msg in messages if msg.type not in ("system", "tool") and msg.content.strip()]
+            st.session_state.message_history = [{"role": msg.type, "content": msg.content} for msg in messages]
             for msg in st.session_state.message_history:
                 print(f"After load_conversation Role: {msg['role']}")
             st.rerun()
