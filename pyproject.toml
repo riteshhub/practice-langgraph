@@ -6,10 +6,12 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "databricks-langchain>=0.7.0",
+    "feedparser>=6.0.12",
     "grandalf>=0.8",
     "langchain[google-genai]>=0.3.27",
     "langgraph>=0.6.3",
     "langgraph-checkpoint-sqlite>=2.0.11",
+    "pyshorteners>=1.0.1",
     "python-dotenv>=1.1.1",
     "streamlit>=1.49.1",
 ]
