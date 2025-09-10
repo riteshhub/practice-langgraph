@@ -1,12 +1,14 @@
 import sqlite3
 from dotenv import load_dotenv
 from typing import Annotated, TypedDict
-from langchain_core.messages import AIMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import StateGraph, START
 from langgraph.graph.message import add_messages
 from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.prebuilt.tool_node import ToolNode, tools_condition
+from langchain_tools import get_current_weather, get_news
 
 load_dotenv()
 
@@ -16,18 +18,21 @@ llm = ChatGoogleGenerativeAI(
     max_output_tokens=1024
 )
 
-parser = StrOutputParser()
+tools = [get_current_weather, get_news]
+
+llm_with_tools = llm.bind_tools(tools)
+
+tool_node = ToolNode(tools)
 
 # define state
 class ChatState(TypedDict):
     messages: Annotated[list[str], add_messages]
 
 # define methods
-def chat(state: ChatState):
+def chat_node(state: ChatState):
     message = state["messages"]
-    chain = llm | parser
-    result = chain.invoke(message)
-    return {"messages": [AIMessage(content=result)]}
+    result = llm_with_tools.invoke(message)
+    return {"messages": [result]}
 
 sql_conn = sqlite3.connect(".db/chat_history.db", check_same_thread=False)
 
@@ -38,11 +43,13 @@ memory = SqliteSaver(conn=sql_conn)
 graph = StateGraph(ChatState)
 
 # define nodes
-graph.add_node("chat", chat)
+graph.add_node("chat", chat_node)
+graph.add_node("tools", tool_node)
 
 # define edges
 graph.add_edge(START, "chat")
-graph.add_edge("chat", END)
+graph.add_conditional_edges("chat", tools_condition)
+graph.add_edge("tools", "chat")
 
 chatbot = graph.compile(checkpointer=memory)
 
